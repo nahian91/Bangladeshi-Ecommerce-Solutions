@@ -1,61 +1,75 @@
 <?php
 if (!defined('ABSPATH')) exit;
 
+// 1️⃣ Register settings
+add_action('admin_init', function() {
+    register_setting('bes_shop_group', 'bes_shop_settings');
+});
+
+// 2️⃣ Shop Settings Card
 function bes_shop_tab() {
     $defaults = [
-        'show_featured' => 1,
-        'show_sale_badge' => 1,
-        'show_add_to_cart' => 1,
-        'show_whatsapp_button' => 1,
-        'hide_prices' => 0,
-        'disable_shop_page' => 0,
-        'hide_categories' => 0,
-        'hide_tags' => 0,
-        'custom_label' => ''
+        'add_to_cart_text'    => 'Add to Cart',
+        'show_total_products' => 1,
+        'products_per_page'   => 12,
     ];
-
     $settings = wp_parse_args(get_option('bes_shop_settings', []), $defaults);
     ?>
+    <style>
+        .bes-shop-card { background:#fff; border:1px solid #ddd; border-radius:12px; padding:20px; max-width:500px; box-shadow:0 2px 8px rgba(0,0,0,0.05); font-family:inherit; }
+        .bes-shop-field { margin-bottom:15px; display:flex; justify-content:space-between; align-items:center; }
+        .bes-text, .bes-number { padding:6px 10px; border:1px solid #ccc; border-radius:6px; width:200px; }
+    </style>
 
-    <h2>Shop Settings</h2>
-    <p>Control shop page layout and product visibility.</p>
+    <div class="bes-shop-card">
+        <h2>Shop Settings</h2>
+        <form method="post" action="options.php">
+            <?php settings_fields('bes_shop_group'); ?>
 
-    <form method="post" action="options.php">
-        <?php settings_fields('bes_shop_group'); ?>
-
-        <div class="bes-shop-card">
-            <?php
-            $checkboxes = [
-                'show_featured' => 'Show Featured Products',
-                'show_sale_badge' => 'Show Sale Badge',
-                'show_add_to_cart' => 'Show Add to Cart Buttons',
-                'show_whatsapp_button' => 'Show WhatsApp Button',
-                'hide_prices' => 'Hide Product Prices',
-                'disable_shop_page' => 'Disable Shop Page',
-                'hide_categories' => 'Hide Categories',
-                'hide_tags' => 'Hide Tags'
-            ];
-
-            foreach ($checkboxes as $key => $label):
-                $val = !empty($settings[$key]) ? 1 : 0;
-            ?>
-                <div class="bes-shop-field">
-                    <label class="switch">
-                        <input type="hidden" name="bes_shop_settings[<?php echo esc_attr($key); ?>]" value="0">
-                        <input type="checkbox" name="bes_shop_settings[<?php echo esc_attr($key); ?>]" value="1" <?php checked($val,1); ?>>
-                        <span class="slider round"></span> <?php echo esc_html($label); ?>
-                    </label>
-                </div>
-            <?php endforeach; ?>
-
-            <div class="bes-shop-field" style="margin-top:10px;">
-                <label>Custom Label/Text for Shop Page:</label><br>
-                <input type="text" name="bes_shop_settings[custom_label]" value="<?php echo esc_attr($settings['custom_label']); ?>" style="width:100%; max-width:400px; padding:5px;">
+            <div class="bes-shop-field">
+                <span>Add to Cart Button Text</span>
+                <input type="text" class="bes-text" name="bes_shop_settings[add_to_cart_text]" value="<?php echo esc_attr($settings['add_to_cart_text']); ?>">
             </div>
 
-            <?php submit_button('Save Shop Settings'); ?>
-        </div>
-    </form>
+            <div class="bes-shop-field">
+                <span>Show Total Products</span>
+                <input type="checkbox" name="bes_shop_settings[show_total_products]" value="1" <?php checked($settings['show_total_products'],1); ?>>
+            </div>
 
-<?php
+            <div class="bes-shop-field">
+                <span>Products Per Page</span>
+                <input type="number" min="1" class="bes-number" name="bes_shop_settings[products_per_page]" value="<?php echo esc_attr($settings['products_per_page']); ?>">
+            </div>
+
+            <?php submit_button('Save Settings'); ?>
+        </form>
+    </div>
+    <?php
 }
+
+// 3️⃣ Change Add to Cart text
+add_filter('woocommerce_product_add_to_cart_text', function($text, $product){
+    $settings = get_option('bes_shop_settings', []);
+    if(!empty($settings['add_to_cart_text'])){
+        return esc_html($settings['add_to_cart_text']);
+    }
+    return $text;
+}, 10, 2);
+
+// 4️⃣ Show total products above loop
+add_action('woocommerce_before_shop_loop', function(){
+    $settings = get_option('bes_shop_settings', []);
+    if(!empty($settings['show_total_products'])){
+        $total = wc_get_loop_prop('total');
+        echo '<p>Total Products: <strong>'.$total.'</strong></p>';
+    }
+});
+
+// 5️⃣ Products per page
+add_filter('loop_shop_per_page', function($per_page){
+    $settings = get_option('bes_shop_settings', []);
+    if(!empty($settings['products_per_page'])){
+        return intval($settings['products_per_page']);
+    }
+    return $per_page;
+}, 20);
