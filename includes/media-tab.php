@@ -1,12 +1,18 @@
 <?php
 if (!defined('ABSPATH')) exit;
 
-function bes_media_check_tab(){
+function bes_media_check_tab() {
+    $uploads = get_posts([
+        'post_type'      => 'attachment',
+        'posts_per_page' => 50,
+        'post_status'    => 'inherit',
+    ]);
     ?>
+
     <h2>Image & Video Size Check</h2>
     <p>Check uploaded media for recommended sizes and limits.</p>
 
-    <table class="widefat">
+    <table class="widefat striped">
         <thead>
             <tr>
                 <th>File Name</th>
@@ -18,46 +24,47 @@ function bes_media_check_tab(){
             </tr>
         </thead>
         <tbody>
-            <?php
-            // Fetch recent uploads
-            $uploads = get_posts([
-                'post_type' => 'attachment',
-                'posts_per_page' => 50,
-                'post_status' => 'inherit'
-            ]);
+            <?php if (!empty($uploads)) : ?>
+                <?php foreach ($uploads as $upload) : 
+                    $file_path = get_attached_file($upload->ID);
+                    $url       = wp_get_attachment_url($upload->ID);
+                    $filetype  = wp_check_filetype($url)['ext'] ?? '';
+                    $filesize  = file_exists($file_path) ? filesize($file_path)/1024 : 0; // KB
+                    $status    = 'OK';
+                    $width     = $height = '-';
 
-            foreach($uploads as $upload){
-                $url = wp_get_attachment_url($upload->ID);
-                $filetype = wp_check_filetype($url)['ext'];
-                $filesize = filesize(get_attached_file($upload->ID))/1024; // KB
-                $status = 'OK';
-
-                if(in_array($filetype, ['jpg','jpeg','png','gif'])){
-                    $size = getimagesize(get_attached_file($upload->ID));
-                    $width = $size[0];
-                    $height = $size[1];
-
-                    // Example limit check
-                    if($width>2000 || $height>2000) $status='Too Large';
-                }elseif(in_array($filetype,['mp4','mov','avi','webm'])){
-                    $width = $height = '-';
-                    // Size limit example 50MB
-                    if($filesize>51200) $status='Too Large';
-                }else{
-                    $width = $height = '-';
-                }
-
-                echo "<tr>
-                    <td>{$upload->post_title}</td>
-                    <td>{$filetype}</td>
-                    <td>{$width}</td>
-                    <td>{$height}</td>
-                    <td>".round($filesize,2)."</td>
-                    <td>{$status}</td>
-                </tr>";
-            }
-            ?>
+                    if (in_array(strtolower($filetype), ['jpg','jpeg','png','gif'])) {
+                        if (file_exists($file_path)) {
+                            $size = @getimagesize($file_path);
+                            if ($size) {
+                                $width = $size[0];
+                                $height = $size[1];
+                                if ($width > 2000 || $height > 2000) $status = 'Too Large';
+                            }
+                        }
+                    } elseif (in_array(strtolower($filetype), ['mp4','mov','avi','webm'])) {
+                        if ($filesize > 51200) $status = 'Too Large'; // >50MB
+                    }
+                ?>
+                    <tr>
+                        <td><?php echo esc_html($upload->post_title); ?></td>
+                        <td><?php echo esc_html($filetype); ?></td>
+                        <td><?php echo esc_html($width); ?></td>
+                        <td><?php echo esc_html($height); ?></td>
+                        <td><?php echo round($filesize, 2); ?></td>
+                        <td><?php echo esc_html($status); ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php else : ?>
+                <tr><td colspan="6">No recent media found.</td></tr>
+            <?php endif; ?>
         </tbody>
     </table>
-    <?php
+
+    <style>
+        .widefat th, .widefat td { padding: 8px; text-align: left; }
+        .widefat td { vertical-align: middle; }
+    </style>
+
+<?php
 }

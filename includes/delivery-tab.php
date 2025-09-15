@@ -1,16 +1,19 @@
 <?php
-if (!defined('ABSPATH')) exit;
+if ( ! defined( 'ABSPATH' ) ) exit;
 
-function bes_delivery_tab(){
-    $saved = get_option('bes_delivery_scheduler', []);
-    $delivery = wp_parse_args($saved, [
-        'enabled' => true,
-        'time_slots' => [],
+/**
+ * Delivery Scheduler Settings Page
+ */
+function bes_delivery_tab() {
+    $saved    = get_option( 'bes_delivery_scheduler', [] );
+    $delivery = wp_parse_args( $saved, [
+        'enabled'        => true,
+        'time_slots'     => [],
         'blackout_dates' => [],
-    ]);
+    ] );
 
-    // Default 5 Time Slots
-    if(empty($delivery['time_slots'])) {
+    // Defaults
+    if ( empty( $delivery['time_slots'] ) ) {
         $delivery['time_slots'] = [
             '9 AM - 12 PM',
             '12 PM - 3 PM',
@@ -20,104 +23,119 @@ function bes_delivery_tab(){
         ];
     }
 
-    // Default 5 Blackout Dates
-    if(empty($delivery['blackout_dates'])) {
-        $delivery['blackout_dates'] = [];
-        for($i=1;$i<=5;$i++){
-            $delivery['blackout_dates'][] = date('Y-m-d', strtotime("+$i day"));
+    if ( empty( $delivery['blackout_dates'] ) ) {
+        for ( $i = 1; $i <= 5; $i++ ) {
+            $delivery['blackout_dates'][] = date( 'Y-m-d', strtotime( "+$i day" ) );
         }
     }
 
-    settings_fields('bes_delivery_group');
-    do_settings_sections('bes_delivery_group');
-
-    echo '<h2>Delivery Scheduler</h2>';
-    echo '<div class="bes-delivery-card">';
-
-    // Enable Scheduler
-    echo '<label class="switch">';
-    echo '<input type="checkbox" name="bes_delivery_scheduler[enabled]" '.checked($delivery['enabled'],true,false).'>';
-    echo '<span class="slider round"></span> Enable Delivery Scheduler';
-    echo '</label>';
-
-    // Time Slots Repeater
-    echo '<h4>Available Time Slots</h4>';
-    echo '<div id="bes-time-slots">';
-    foreach($delivery['time_slots'] as $slot){
-        echo '<div class="bes-repeater-item"><input type="text" name="bes_delivery_scheduler[time_slots][]" value="'.esc_attr($slot).'" placeholder="e.g. 9 AM - 12 PM"><button class="button remove-item">Remove</button></div>';
-    }
-    echo '</div>';
-    echo '<button class="button" id="add-slot">Add Time Slot</button>';
-    echo '<button class="button" id="reset-slot">Reset Default 5</button>';
-
-    // Blackout Dates Repeater
-    echo '<h4>Blackout Dates</h4>';
-    echo '<div id="bes-blackout-dates">';
-    foreach($delivery['blackout_dates'] as $date){
-        echo '<div class="bes-repeater-item"><input type="text" class="date-picker" name="bes_delivery_scheduler[blackout_dates][]" value="'.esc_attr($date).'" placeholder="YYYY-MM-DD"><button class="button remove-item">Remove</button></div>';
-    }
-    echo '</div>';
-    echo '<button class="button" id="add-date">Add Blackout Date</button>';
-    echo '<button class="button" id="reset-date">Reset Default 5</button>';
-
-    echo '</div>';
-
-    submit_button('Save Delivery Settings');
+    settings_fields( 'bes_delivery_group' );
+    do_settings_sections( 'bes_delivery_group' );
     ?>
+    <h2>Delivery Scheduler</h2>
+    <div class="bes-delivery-card">
 
-    <style>
-        .bes-delivery-card { border:1px solid #ddd; padding:15px; border-radius:6px; background:#fdfdfd; max-width:650px; }
-        .bes-repeater-item { display:flex; gap:10px; margin-bottom:5px; align-items:center; }
-        .bes-repeater-item input { padding:6px; width:200px; }
-        .switch { position: relative; display: inline-block; width:40px; height:20px; margin-bottom:15px; }
-        .switch input { display:none; }
-        .slider { position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background:#ccc; transition:.4s; border-radius:20px; }
-        .slider:before { position:absolute; content:""; height:16px; width:16px; left:2px; bottom:2px; background:white; transition:.4s; border-radius:50%; }
-        input:checked + .slider { background:#4caf50; }
-        input:checked + .slider:before { transform:translateX(20px); }
-    </style>
+        <label class="switch">
+            <input type="checkbox" name="bes_delivery_scheduler[enabled]" <?php checked( $delivery['enabled'], true ); ?>>
+            <span class="slider round"></span> Enable Delivery Scheduler
+        </label>
 
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.14.0/jquery-ui.min.js"></script>
-    <script>
-        jQuery(document).ready(function($){
-            // Date picker
-            $('.date-picker').datepicker({ dateFormat: 'yy-mm-dd' });
+        <h4>Available Time Slots</h4>
+        <div id="bes-time-slots">
+            <?php foreach ( $delivery['time_slots'] as $slot ) : ?>
+                <div class="bes-repeater-item">
+                    <input type="text" name="bes_delivery_scheduler[time_slots][]" value="<?php echo esc_attr( $slot ); ?>">
+                    <button class="button remove-item">Remove</button>
+                </div>
+            <?php endforeach; ?>
+        </div>
+        <button class="button" id="add-slot">Add Time Slot</button>
 
-            // Add/Remove Time Slot
-            $('#add-slot').click(function(e){ e.preventDefault();
-                $('#bes-time-slots').append('<div class="bes-repeater-item"><input type="text" name="bes_delivery_scheduler[time_slots][]" placeholder="e.g. 9 AM - 12 PM"><button class="button remove-item">Remove</button></div>');
-            });
-            $('#reset-slot').click(function(e){ e.preventDefault();
-                let defaults = ['9 AM - 12 PM','12 PM - 3 PM','3 PM - 6 PM','6 PM - 9 PM','9 PM - 11 PM'];
-                $('#bes-time-slots').html('');
-                defaults.forEach(function(s){ $('#bes-time-slots').append('<div class="bes-repeater-item"><input type="text" name="bes_delivery_scheduler[time_slots][]" value="'+s+'"><button class="button remove-item">Remove</button></div>'); });
-            });
+        <h4>Blackout Dates</h4>
+        <div id="bes-blackout-dates">
+            <?php foreach ( $delivery['blackout_dates'] as $date ) : ?>
+                <div class="bes-repeater-item">
+                    <input type="text" class="date-picker" name="bes_delivery_scheduler[blackout_dates][]" value="<?php echo esc_attr( $date ); ?>">
+                    <button class="button remove-item">Remove</button>
+                </div>
+            <?php endforeach; ?>
+        </div>
+        <button class="button" id="add-date">Add Blackout Date</button>
 
-            // Add/Remove Blackout Date
-            $('#add-date').click(function(e){ e.preventDefault();
-                $('#bes-blackout-dates').append('<div class="bes-repeater-item"><input type="text" class="date-picker" name="bes_delivery_scheduler[blackout_dates][]" placeholder="YYYY-MM-DD"><button class="button remove-item">Remove</button></div>');
-                $('.date-picker').datepicker({ dateFormat: 'yy-mm-dd' });
-            });
-            $('#reset-date').click(function(e){ e.preventDefault();
-                let today = new Date(); let dates=[];
-                for(let i=1;i<=5;i++){ let d=new Date(); d.setDate(today.getDate()+i); dates.push(d.toISOString().split('T')[0]); }
-                $('#bes-blackout-dates').html('');
-                dates.forEach(function(d){ $('#bes-blackout-dates').append('<div class="bes-repeater-item"><input type="text" class="date-picker" name="bes_delivery_scheduler[blackout_dates][]" value="'+d+'"><button class="button remove-item">Remove</button></div>'); });
-                $('.date-picker').datepicker({ dateFormat: 'yy-mm-dd' });
-            });
-
-            // Remove any item
-            $(document).on('click','.remove-item',function(e){ e.preventDefault(); $(this).parent().remove(); });
-        });
-    </script>
-
+    </div>
     <?php
+    submit_button( 'Save Delivery Settings' );
 }
 
-// Admin notice
-add_action('admin_notices', function() {
-    if(isset($_GET['settings-updated']) && $_GET['settings-updated']==='true' && isset($_GET['tab']) && $_GET['tab']==='delivery'){
-        echo '<div class="notice notice-success is-dismissible"><p>Delivery settings saved successfully!</p></div>';
+/**
+ * Register menu & settings
+ */
+add_action( 'admin_menu', function () {
+    add_submenu_page(
+        'woocommerce',
+        'Delivery Scheduler',
+        'Delivery Scheduler',
+        'manage_options',
+        'bes-delivery-scheduler',
+        'bes_delivery_tab'
+    );
+} );
+
+add_action( 'admin_init', function () {
+    register_setting( 'bes_delivery_group', 'bes_delivery_scheduler' );
+} );
+
+/**
+ * Checkout fields
+ */
+add_filter( 'woocommerce_checkout_fields', function ( $fields ) {
+    $settings = get_option( 'bes_delivery_scheduler', [] );
+    $settings = wp_parse_args( $settings, [ 'enabled' => true, 'time_slots' => [] ] );
+
+    if ( empty( $settings['enabled'] ) ) {
+        return $fields;
     }
-});
+
+    $fields['billing']['delivery_date'] = [
+        'type'        => 'text',
+        'label'       => __( 'Delivery Date', 'bes-delivery' ),
+        'placeholder' => __( 'YYYY-MM-DD', 'bes-delivery' ),
+        'required'    => true,
+        'class'       => [ 'form-row-wide' ],
+    ];
+
+    $fields['billing']['delivery_time'] = [
+        'type'     => 'select',
+        'label'    => __( 'Delivery Time', 'bes-delivery' ),
+        'required' => true,
+        'options'  => array_combine( $settings['time_slots'], $settings['time_slots'] ),
+        'class'    => [ 'form-row-wide' ],
+    ];
+
+    return $fields;
+} );
+
+/**
+ * Save order meta
+ */
+add_action( 'woocommerce_checkout_update_order_meta', function ( $order_id ) {
+    if ( ! empty( $_POST['delivery_date'] ) ) {
+        update_post_meta( $order_id, '_delivery_date', sanitize_text_field( $_POST['delivery_date'] ) );
+    }
+    if ( ! empty( $_POST['delivery_time'] ) ) {
+        update_post_meta( $order_id, '_delivery_time', sanitize_text_field( $_POST['delivery_time'] ) );
+    }
+} );
+
+/**
+ * Show in admin order details
+ */
+add_action( 'woocommerce_admin_order_data_after_billing_address', function ( $order ) {
+    $date = get_post_meta( $order->get_id(), '_delivery_date', true );
+    $time = get_post_meta( $order->get_id(), '_delivery_time', true );
+
+    if ( $date || $time ) : ?>
+        <p><strong><?php esc_html_e( 'Delivery Date', 'bes-delivery' ); ?>:</strong> <?php echo esc_html( $date ); ?></p>
+        <p><strong><?php esc_html_e( 'Delivery Time', 'bes-delivery' ); ?>:</strong> <?php echo esc_html( $time ); ?></p>
+    <?php endif;
+} );

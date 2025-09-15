@@ -42,8 +42,69 @@ register_activation_hook(__FILE__, function(){
 // -------------------- Admin Menu --------------------
 add_action('admin_menu','bes_add_main_menu');
 function bes_add_main_menu(){
-    add_menu_page('BES Settings','BES Settings','manage_options','bes-settings','bes_settings_page','dashicons-admin-tools',56);
+    add_menu_page(
+        'BES Settings',
+        'BES Settings',
+        'manage_options',
+        'bes-settings',
+        'bes_settings_page',
+        'dashicons-admin-tools',
+        56
+    );
 }
+
+// -------------------- Admin Assets (Global + Tab-wise) --------------------
+add_action('admin_enqueue_scripts', function($hook){
+    if($hook !== 'toplevel_page_bes-settings') return;
+
+    $active_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'general';
+
+    // Global admin CSS/JS
+    wp_enqueue_style(
+        'bes-admin-css',
+        plugin_dir_url(__FILE__).'assets/css/bes-admin.css',
+        [],
+        '1.8.0'
+    );
+
+    wp_enqueue_script(
+        'bes-admin-js',
+        plugin_dir_url(__FILE__).'assets/js/bes-admin.js',
+        ['jquery'],
+        '1.8.0',
+        true
+    );
+
+    wp_localize_script('bes-admin-js', 'besSettings', [
+        'activeTab' => $active_tab
+    ]);
+
+    // Tab-specific CSS
+    $css_file_path = plugin_dir_path(__FILE__)."assets/css/bes-{$active_tab}.css";
+    if(file_exists($css_file_path)){
+        wp_enqueue_style(
+            "bes-{$active_tab}-css",
+            plugin_dir_url(__FILE__)."assets/css/bes-{$active_tab}.css",
+            [],
+            '1.8.0'
+        );
+    }
+
+    // Tab-specific JS
+    $js_file_path = plugin_dir_path(__FILE__)."assets/js/bes-{$active_tab}.js";
+    if(file_exists($js_file_path)){
+        wp_enqueue_script(
+            "bes-{$active_tab}-js",
+            plugin_dir_url(__FILE__)."assets/js/bes-{$active_tab}.js",
+            ['jquery'],
+            '1.8.0',
+            true
+        );
+        wp_localize_script("bes-{$active_tab}-js", 'besSettings', [
+            'activeTab' => $active_tab
+        ]);
+    }
+});
 
 // -------------------- Settings Page --------------------
 function bes_settings_page(){
@@ -74,7 +135,6 @@ function bes_settings_page(){
     ];
 
     foreach($tabs as $key=>$label){
-        // Show tab if enabled in General or if it is the General tab itself
         if($key=='general' || !isset($general[$key]) || $general[$key]){
             echo '<a href="?page=bes-settings&tab='.$key.'" class="nav-tab '.($active_tab==$key?'nav-tab-active':'').'">'.$label.'</a>';
         }
