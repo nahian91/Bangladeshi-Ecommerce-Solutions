@@ -2,63 +2,42 @@
 if (!defined('ABSPATH')) exit;
 
 /**
- * ===============================
- * 1️⃣ District & Upazilla Admin
- * ===============================
+ * 1️⃣ Prefilled District & Upazilla Settings
  */
 function bes_district_tab() {
-    $json_data = get_option('bes_district_settings_json', '[]');
-    $districts = json_decode($json_data, true);
-    if (!is_array($districts)) $districts = [];
+    // Prefilled districts with all upazillas per district
+    $districts = [
+        ['district'=>'Dhaka','upazillas'=>['Dhaka Sadar','Narayanganj Sadar','Munshiganj Sadar','Narsingdi Sadar','Gazipur Sadar','Manikganj Sadar','Tangail Sadar','Kishoreganj Sadar'],'postcode'=>'1000-2399'],
+        ['district'=>'Mymensingh','upazillas'=>['Jamalpur Sadar','Sherpur Sadar','Mymensingh Sadar','Netrokona Sadar'],'postcode'=>'2000-2499'],
+        ['district'=>'Sylhet','upazillas'=>['Sunamganj Sadar','Sylhet Sadar','Moulvibazar Sadar','Habiganj Sadar'],'postcode'=>'3000-3399'],
+        ['district'=>'Chattogram','upazillas'=>['Chattogram Sadar','Khagrachhari Sadar','Rangamati Sadar','Bandarban Sadar','Cox\'s Bazar Sadar'],'postcode'=>'4000-4799'],
+        ['district'=>'Rangpur','upazillas'=>['Panchagarh Sadar','Thakurgaon Sadar','Dinajpur Sadar','Nilphamari Sadar','Rangpur Sadar','Lalmonirhat Sadar','Kurigram Sadar','Gaibandha Sadar'],'postcode'=>'5000-5799'],
+        ['district'=>'Rajshahi','upazillas'=>['Bogura Sadar','Joypurhat Sadar','Rajshahi Sadar','Chapai Nawabganj Sadar','Natore Sadar','Naogaon Sadar','Pabna Sadar','Sirajganj Sadar'],'postcode'=>'5800-6799'],
+        ['district'=>'Barishal','upazillas'=>['Barishal Sadar','Bhola Sadar','Jhalokati Sadar','Pirojpur Sadar','Patuakhali Sadar','Barguna Sadar'],'postcode'=>'8200-8799'],
+    ];
 
-    for ($i = 0; $i < 5; $i++) {
-        if (!isset($districts[$i])) {
-            $districts[$i] = ['district' => '', 'upazillas' => [''], 'postcode' => ''];
-        }
+    $json_data = get_option('bes_district_settings_json', '');
+    if (empty($json_data)) {
+        update_option('bes_district_settings_json', wp_json_encode($districts));
     }
+
+    // Admin form display
     ?>
     <h2>District & Upazilla Auto-Fill</h2>
     <div id="bes-district-repeater">
-        <?php foreach ($districts as $index => $d):
-            $district = esc_attr($d['district'] ?? '');
-            $upazillas = esc_attr(implode(',', $d['upazillas'] ?? []));
-            $postcode = esc_attr($d['postcode'] ?? '');
-        ?>
-        <div class="bes-district-row">
-            <input type="text" name="bes_district_settings[<?php echo $index; ?>][district]" value="<?php echo $district; ?>" placeholder="District">
-            <input type="text" name="bes_district_settings[<?php echo $index; ?>][upazillas]" value="<?php echo $upazillas; ?>" placeholder="Upazillas (comma-separated)">
-            <input type="text" name="bes_district_settings[<?php echo $index; ?>][postcode]" value="<?php echo $postcode; ?>" placeholder="Postcode">
-            <button class="button remove-row">Remove</button>
-        </div>
+        <?php foreach ($districts as $index => $d): ?>
+            <div class="bes-district-row" style="margin-bottom:10px;">
+                <input type="text" name="bes_district_settings[<?php echo $index; ?>][district]" value="<?php echo esc_attr($d['district']); ?>" placeholder="District">
+                <input type="text" name="bes_district_settings[<?php echo $index; ?>][upazillas]" value="<?php echo esc_attr(implode(',', $d['upazillas'])); ?>" placeholder="Upazillas (comma-separated)">
+                <input type="text" name="bes_district_settings[<?php echo $index; ?>][postcode]" value="<?php echo esc_attr($d['postcode']); ?>" placeholder="Postcode">
+            </div>
         <?php endforeach; ?>
     </div>
-    <button class="button" id="add-district-row">Add Row</button>
     <?php submit_button('Save District Settings'); ?>
-
-    <script>
-    jQuery(document).ready(function($){
-        $('#add-district-row').click(function(e){
-            e.preventDefault();
-            let index = $('#bes-district-repeater .bes-district-row').length;
-            $('#bes-district-repeater').append(`
-                <div class="bes-district-row">
-                    <input type="text" name="bes_district_settings[${index}][district]" placeholder="District">
-                    <input type="text" name="bes_district_settings[${index}][upazillas]" placeholder="Upazillas (comma-separated)">
-                    <input type="text" name="bes_district_settings[${index}][postcode]" placeholder="Postcode">
-                    <button class="button remove-row">Remove</button>
-                </div>
-            `);
-        });
-
-        $(document).on('click', '.remove-row', function(e){
-            e.preventDefault();
-            $(this).parent().remove();
-        });
-    });
-    </script>
-<?php
+    <?php
 }
 
+// Save district settings
 add_action('admin_init', function() {
     if (isset($_POST['bes_district_settings'])) {
         $data = $_POST['bes_district_settings'];
@@ -76,9 +55,7 @@ add_action('admin_init', function() {
 });
 
 /**
- * ===============================
- * 2️⃣ Add District & Upazilla to Checkout
- * ===============================
+ * 2️⃣ Checkout Fields
  */
 add_filter('woocommerce_checkout_fields', function($fields){
     $districts = json_decode(get_option('bes_district_settings_json', '[]'), true);
@@ -107,53 +84,64 @@ add_filter('woocommerce_checkout_fields', function($fields){
         'options' => ['' => 'Select Upazilla']
     ];
 
+    $fields['billing']['billing_postcode'] = [
+        'type' => 'text',
+        'label' => 'Postcode',
+        'required' => true,
+        'class' => ['form-row-wide'],
+        'id' => 'billing_postcode',
+    ];
+
     return $fields;
 });
 
 /**
- * ===============================
- * 3️⃣ Frontend JS: Auto-fill Upazilla
- * ===============================
+ * 3️⃣ Frontend JS: Auto-fill Upazilla + Postcode
  */
 add_action('wp_footer', function(){
     $districts = json_decode(get_option('bes_district_settings_json', '[]'), true);
     if (!$districts) return;
+
+    // Group upazillas by district
+    $DIST = [];
+    foreach($districts as $d){
+        $DIST[$d['district']] = [
+            'upazillas' => $d['upazillas'],
+            'postcode' => $d['postcode']
+        ];
+    }
     ?>
     <script>
     jQuery(document).ready(function($){
-        const DISTRICTS = <?php echo wp_json_encode($districts); ?>;
+        const DISTRICTS = <?php echo wp_json_encode($DIST); ?>;
 
         function populateUpazilla(district){
-            let upazillas = [''];
-            DISTRICTS.forEach(d => {
-                if(d.district === district){
-                    upazillas = d.upazillas;
-                }
-            });
             const $upazilla = $('#billing_upazilla');
             $upazilla.empty();
-            $upazilla.append(`<option value="">Select Upazilla</option>`);
-            upazillas.forEach(u => {
-                $upazilla.append(`<option value="${u}">${u}</option>`);
-            });
+            $upazilla.append('<option value="">Select Upazilla</option>');
+
+            if(DISTRICTS[district]){
+                DISTRICTS[district].upazillas.forEach(u => {
+                    $upazilla.append(`<option value="${u}">${u}</option>`);
+                });
+                $('#billing_postcode').val(DISTRICTS[district].postcode);
+            } else {
+                $('#billing_postcode').val('');
+            }
         }
 
-        function initUpazillaDropdown(){
-            populateUpazilla($('#billing_district').val());
-        }
+        // Init on load
+        populateUpazilla($('#billing_district').val());
 
         // On change
         $(document).on('change', '#billing_district', function(){
             populateUpazilla($(this).val());
         });
 
-        // WooCommerce updates checkout via AJAX
+        // WooCommerce AJAX updates
         $('body').on('updated_checkout', function(){
-            initUpazillaDropdown();
+            populateUpazilla($('#billing_district').val());
         });
-
-        // Init on page load
-        initUpazillaDropdown();
     });
     </script>
     <?php
