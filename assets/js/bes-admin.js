@@ -1,20 +1,27 @@
-jQuery(document).ready(function($){
-    var besActiveTab = besSettings.activeTab;
+document.addEventListener('DOMContentLoaded', () => {
+    // Tabs
+    document.querySelectorAll('.bpsm-tabs-container').forEach(container => {
+        const tabs = container.querySelectorAll('.bpsm-tab');
+        const contents = container.querySelectorAll('.bpsm-tab-content');
 
-    $('.bes-tab-label input[type=checkbox]').on('change', function(){
-        var tabKey = $(this).attr('name').match(/\[(.*?)\]/)[1];
-        var tabLink = $('.nav-tab-wrapper a[href*="tab='+tabKey+'"]');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('bpsm-tab-active'));
+                tab.classList.add('bpsm-tab-active');
 
-        if($(this).is(':checked')){
-            if(tabLink.length === 0){
-                var tabLabel = $(this).closest('.bes-tab-label').find('.bes-tab-text').text().trim();
-                var newTab = $('<a class="nav-tab" href="?page=bes-settings&tab='+tabKey+'">'+tabLabel+'</a>');
-                $('.nav-tab-wrapper').append(newTab);
-            }
-        } else {
-            if(tabKey !== besActiveTab){
-                tabLink.remove();
-            }
-        }
+                contents.forEach(c => c.style.display = 'none');
+                const target = tab.getAttribute('data-target');
+                const targetContent = container.querySelector(`#${target}`);
+                if(targetContent) targetContent.style.display = 'block';
+            });
+        });
+    });
+
+    // Collapsible Cards
+    document.querySelectorAll('.bpsm-collapse-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const body = header.nextElementSibling;
+            body.style.display = body.style.display === 'block' ? 'none' : 'block';
+        });
     });
 });

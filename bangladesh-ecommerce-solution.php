@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Bangladesh eCommerce Solution Advanced
- * Description: WooCommerce Checkout & Cart Advanced Settings + Analytics + Delivery Scheduler + Product & Shop Control
- * Version: 1.8.0
+ * Description: WooCommerce Checkout & Cart Advanced Settings + Analytics + Delivery Scheduler + Product & Shop Control + Sequential Order Numbers
+ * Version: 1.8.1
  * Author: Abdullah Nahian
  */
 
@@ -25,6 +25,7 @@ add_action('admin_init', function() {
     register_setting('bes_district_group', 'bes_district_settings');
     register_setting('bes_thankyou_group', 'bes_thankyou_settings');
     register_setting('bes_reports_group', 'bes_reports_settings');
+    register_setting('bes_sequential_group', 'bes_sequential_settings'); // Sequential
 });
 
 // -------------------- Plugin Activation Defaults --------------------
@@ -64,14 +65,14 @@ add_action('admin_enqueue_scripts', function($hook){
         'bes-admin-css',
         plugin_dir_url(__FILE__).'assets/css/bes-admin.css',
         [],
-        '1.8.0'
+        '1.8.1'
     );
 
     wp_enqueue_script(
         'bes-admin-js',
         plugin_dir_url(__FILE__).'assets/js/bes-admin.js',
         ['jquery'],
-        '1.8.0',
+        '1.8.1',
         true
     );
 
@@ -86,7 +87,7 @@ add_action('admin_enqueue_scripts', function($hook){
             "bes-{$active_tab}-css",
             plugin_dir_url(__FILE__)."assets/css/bes-{$active_tab}.css",
             [],
-            '1.8.0'
+            '1.8.1'
         );
     }
 
@@ -97,7 +98,7 @@ add_action('admin_enqueue_scripts', function($hook){
             "bes-{$active_tab}-js",
             plugin_dir_url(__FILE__)."assets/js/bes-{$active_tab}.js",
             ['jquery'],
-            '1.8.0',
+            '1.8.1',
             true
         );
         wp_localize_script("bes-{$active_tab}-js", 'besSettings', [
@@ -131,7 +132,8 @@ function bes_settings_page(){
         'system'=>'System Info',
         'media_check'=>'Image/Video Check',
         'product'=>'Product',
-        'shop'=>'Shop'
+        'shop'=>'Shop',
+        'sequential'=>'Sequential Number'
     ];
 
     foreach($tabs as $key=>$label){
@@ -158,6 +160,7 @@ function bes_settings_page(){
         case 'media_check': bes_media_check_tab(); break;
         case 'product': bes_product_tab(); break;
         case 'shop': bes_shop_tab(); break;
+        case 'sequential': settings_fields('bes_sequential_group'); bes_sequential_tab(); break;
     }
     echo '</form></div>';
 }
@@ -180,7 +183,8 @@ add_action('admin_notices', function(){
             'system'=>'System Info settings saved successfully!',
             'media_check'=>'Image/Video Check settings saved successfully!',
             'product'=>'Product settings saved successfully!',
-            'shop'=>'Shop settings saved successfully!'
+            'shop'=>'Shop settings saved successfully!',
+            'sequential'=>'Sequential Number settings saved successfully!'
         ];
         if(isset($messages[$tab])){
             echo '<div class="notice notice-success is-dismissible"><p>'.$messages[$tab].'</p></div>';

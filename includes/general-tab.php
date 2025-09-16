@@ -32,24 +32,32 @@ function bes_general_tab() {
         <?php settings_fields('bes_general_group'); ?>
         <?php do_settings_sections('bes_general_group'); ?>
 
-        <h2 class="bes-page-title">Enable/Disable Plugin Tabs</h2>
-        <div class="bes-tab-grid">
+        <h2 class="bpsm-card h3 bpsm-mb-15">Enable/Disable Plugin Tabs</h2>
+
+        <div class="bpsm-row">
             <?php foreach ($tabs as $key => $tab): 
                 $checked = !empty($general[$key]) ? 1 : 0; 
             ?>
-                <div class="bes-tab-card" style="border-top:4px solid <?php echo esc_attr($tab['color']); ?>;">
-                    <label class="bes-tab-label">
-                        <div class="bes-tab-icon"><?php echo $tab['icon']; ?></div>
-                        <div class="bes-tab-text"><?php echo esc_html($tab['label']); ?></div>
-                        <input type="hidden" name="bes_general_settings[<?php echo $key; ?>]" value="0">
-                        <input type="checkbox" name="bes_general_settings[<?php echo $key; ?>]" value="1" <?php checked($checked,1); ?>>
-                        <span class="bes-slider"></span>
-                    </label>
+                <div class="bpsm-col-3">
+                    <div class="bpsm-card" style="border-top:4px solid <?php echo esc_attr($tab['color']); ?>;">
+                        <h3 class="bpsm-text-center"><?php echo esc_html($tab['label']); ?></h3>
+                        <div class="bpsm-text-center" style="font-size:28px;"><?php echo $tab['icon']; ?></div>
+                        <div class="bpsm-text-center bpsm-mt-10">
+                            <label class="bpsm-toggle">
+                                <input type="hidden" name="bes_general_settings[<?php echo $key; ?>]" value="0">
+                                <input type="checkbox" name="bes_general_settings[<?php echo $key; ?>]" value="1" <?php checked($checked,1); ?>>
+                                <span class="bpsm-slider"></span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
             <?php endforeach; ?>
         </div>
 
-        <?php submit_button('Save Settings', 'primary', 'bes-save-btn'); ?>
+        <div class="bpsm-mt-20">
+            <?php submit_button('Save Settings', 'primary', 'bes-save-btn'); ?>
+        </div>
     </form>
+
 <?php
 }
