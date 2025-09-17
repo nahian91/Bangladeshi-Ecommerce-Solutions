@@ -1,52 +1,60 @@
 <?php
-function bes_general_tab() {
+if (!defined('ABSPATH')) exit;
 
+function bcaw_general_tab() {
+
+    // Default tab states
     $defaults = [
-        'checkout' => 1, 'cart' => 1, 'delivery' => 1,
-        'package' => 1, 'marketing' => 1, 'whatsapp' => 1,
-        'district' => 1, 'thankyou' => 1, 'reports' => 1,
-        'system' => 1, 'media_check' => 1, 'product' => 1, 'shop' => 1
+        'checkout'     => 1,
+        'cart'         => 1,
+        'delivery'     => 1,
+        'package'      => 1,
+        'whatsapp'     => 1,
+        'district'     => 1,
+        'system'       => 1,
+        'media_check'  => 1,
+        'product'      => 1,
+        'shop'         => 1,
+        'payments'     => 1
     ];
 
-    $general = get_option('bes_general_settings', $defaults);
+    $general = get_option('bcaw_general_settings', $defaults);
     $general = wp_parse_args($general, $defaults);
 
+    // Tab definitions
     $tabs = [
-        'checkout' => ['label'=>'Checkout', 'icon'=>'🛒', 'color'=>'#f39c12'],
-        'cart' => ['label'=>'Cart', 'icon'=>'🛍️', 'color'=>'#e74c3c'],
-        'delivery' => ['label'=>'Delivery', 'icon'=>'🚚', 'color'=>'#27ae60'],
-        'package' => ['label'=>'Package/Invoice', 'icon'=>'📦', 'color'=>'#2980b9'],
-        'marketing' => ['label'=>'Marketing', 'icon'=>'📢', 'color'=>'#9b59b6'],
-        'whatsapp' => ['label'=>'WhatsApp', 'icon'=>'💬', 'color'=>'#25d366'],
-        'district' => ['label'=>'District/Upazilla', 'icon'=>'🏘️', 'color'=>'#d35400'],
-        'thankyou' => ['label'=>'Thank You Messages', 'icon'=>'🙏', 'color'=>'#1abc9c'],
-        'reports' => ['label'=>'Reports', 'icon'=>'📊', 'color'=>'#c0392b'],
-        'system' => ['label'=>'System Info', 'icon'=>'💻', 'color'=>'#34495e'],
-        'media_check' => ['label'=>'Image/Video Check', 'icon'=>'🖼️', 'color'=>'#16a085'],
-        'product' => ['label'=>'Product', 'icon'=>'🏷️', 'color'=>'#8e44ad'],
-        'shop' => ['label'=>'Shop', 'icon'=>'🏪', 'color'=>'#d35400']
+        'payments'     => ['label' => __('Payments','banglacommerce-all-in-one-woocommerce')],
+        'whatsapp'     => ['label' => __('WhatsApp','banglacommerce-all-in-one-woocommerce')],
+        'district'     => ['label' => __('District/Upazilla','banglacommerce-all-in-one-woocommerce')],
+        'product'      => ['label' => __('Product','banglacommerce-all-in-one-woocommerce')],
+        'shop'         => ['label' => __('Shop','banglacommerce-all-in-one-woocommerce')],
+        'checkout'     => ['label' => __('Checkout','banglacommerce-all-in-one-woocommerce')],
+        'cart'         => ['label' => __('Cart','banglacommerce-all-in-one-woocommerce')],
+        'delivery'     => ['label' => __('Delivery','banglacommerce-all-in-one-woocommerce')],
+        'package'      => ['label' => __('Package/Invoice','banglacommerce-all-in-one-woocommerce')],
+        'media_check'  => ['label' => __('Image/Video Check','banglacommerce-all-in-one-woocommerce')],
+        'system'       => ['label' => __('System Info','banglacommerce-all-in-one-woocommerce')],
     ];
     ?>
 
     <form method="post" action="options.php">
-        <?php settings_fields('bes_general_group'); ?>
-        <?php do_settings_sections('bes_general_group'); ?>
+        <?php settings_fields('bcaw_general_group'); ?>
+        <?php do_settings_sections('bcaw_general_group'); ?>
 
-        <h2 class="bpsm-card h3 bpsm-mb-15">Enable/Disable Plugin Tabs</h2>
+        <h2 class="bcaw-card-title"><?php _e('Enable/Disable Plugin Tabs','banglacommerce-all-in-one-woocommerce'); ?></h2>
 
-        <div class="bpsm-row">
+        <div class="bcaw-row">
             <?php foreach ($tabs as $key => $tab): 
                 $checked = !empty($general[$key]) ? 1 : 0; 
             ?>
-                <div class="bpsm-col-3">
-                    <div class="bpsm-card" style="border-top:4px solid <?php echo esc_attr($tab['color']); ?>;">
-                        <h3 class="bpsm-text-center"><?php echo esc_html($tab['label']); ?></h3>
-                        <div class="bpsm-text-center" style="font-size:28px;"><?php echo $tab['icon']; ?></div>
-                        <div class="bpsm-text-center bpsm-mt-10">
-                            <label class="bpsm-toggle">
-                                <input type="hidden" name="bes_general_settings[<?php echo $key; ?>]" value="0">
-                                <input type="checkbox" name="bes_general_settings[<?php echo $key; ?>]" value="1" <?php checked($checked,1); ?>>
-                                <span class="bpsm-slider"></span>
+                <div class="bcaw-col-3">
+                    <div class="bcaw-card bcaw-card-padding">
+                        <h3 class="bcaw-text-center"><?php echo esc_html($tab['label']); ?></h3>
+                        <div class="bcaw-text-center bcaw-mt-10">
+                            <label class="bcaw-toggle">
+                                <input type="hidden" name="bcaw_general_settings[<?php echo esc_attr($key); ?>]" value="0">
+                                <input type="checkbox" name="bcaw_general_settings[<?php echo esc_attr($key); ?>]" value="1" <?php checked($checked,1); ?>>
+                                <span class="bcaw-slider"></span>
                             </label>
                         </div>
                     </div>
@@ -54,10 +62,30 @@ function bes_general_tab() {
             <?php endforeach; ?>
         </div>
 
-        <div class="bpsm-mt-20">
-            <?php submit_button('Save Settings', 'primary', 'bes-save-btn'); ?>
+        <div class="bcaw-mt-20">
+            <?php submit_button(__('Save Settings','banglacommerce-all-in-one-woocommerce'), 'primary', 'bcaw-save-btn'); ?>
         </div>
     </form>
 
+    <style>
+        /* Simple Toggle CSS */
+        .bcaw-toggle { position: relative; display: inline-block; width: 50px; height: 24px; }
+        .bcaw-toggle input { opacity: 0; width: 0; height: 0; }
+        .bcaw-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+                       background-color: #ccc; transition: .4s; border-radius: 24px; }
+        .bcaw-slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+                              background-color: white; transition: .4s; border-radius: 50%; }
+        .bcaw-toggle input:checked + .bcaw-slider { background-color: #0073aa; }
+        .bcaw-toggle input:checked + .bcaw-slider:before { transform: translateX(26px); }
+        .bcaw-text-center { text-align: center; }
+        .bcaw-mt-10 { margin-top: 10px; }
+        .bcaw-mt-20 { margin-top: 20px; }
+        .bcaw-row { display: flex; flex-wrap: wrap; gap: 15px; }
+        .bcaw-col-3 { flex: 1 1 22%; min-width: 200px; }
+        .bcaw-card { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); padding: 15px; }
+        .bcaw-card-padding { padding: 15px; }
+        .bcaw-card-title { margin-bottom: 20px; }
+    </style>
 <?php
 }
+?>
