@@ -3,10 +3,10 @@ if (!defined('ABSPATH')) exit;
 
 /**
  * ===============================
- * 1️⃣ Prefilled District, Upazilla & Thana Settings
+ * District, Upazilla & Thana Settings Tab
  * ===============================
  */
-function bes_district_tab() {
+function bcaw_district_tab() {
     // Default districts
     $districts = [
         ['district'=>'Dhaka','upazillas'=>[
@@ -27,26 +27,24 @@ function bes_district_tab() {
         ['district'=>'Chattogram','upazillas'=>[
             ['name'=>'Chattogram Sadar','thanas'=>['Thana 1']],
             ['name'=>'Khagrachhari Sadar','thanas'=>['Thana 2']],
-            ['name'=>'Cox\'s Bazar Sadar','thanas'=>['Thana 3']]
+            ['name'=>"Cox's Bazar Sadar",'thanas'=>['Thana 3']]
         ],'postcode'=>'4000-4799']
-        // Add more districts as needed...
     ];
 
-    // Load saved data
+    // Load saved settings
     $saved = get_option('bes_district_settings', ['enabled'=>1,'json'=>'']);
     $saved_json = !empty($saved['json']) ? json_decode($saved['json'], true) : $districts;
-    $enabled = isset($saved['enabled']) ? $saved['enabled'] : 1;
-
+    $enabled = isset($saved['enabled']) ? (int)$saved['enabled'] : 1;
     ?>
     <div class="wrap">
-        <h1>District, Upazilla & Thana Settings</h1>
+        <h1><?php echo esc_html__('District, Upazilla & Thana Settings', 'bes-textdomain'); ?></h1>
 
         <form method="post" action="">
             <?php wp_nonce_field('bes_save_district_settings','bes_district_nonce'); ?>
 
             <p>
                 <label>
-                    <strong>Enable District Feature:</strong>
+                    <strong><?php echo esc_html__('Enable District Feature:', 'bes-textdomain'); ?></strong>
                     <input type="checkbox" name="bes_enabled" value="1" <?php checked($enabled,1); ?>>
                 </label>
             </p>
@@ -54,10 +52,10 @@ function bes_district_tab() {
             <table class="widefat striped">
                 <thead>
                     <tr>
-                        <th>District</th>
-                        <th>Upazilla</th>
-                        <th>Thana</th>
-                        <th>Postcode</th>
+                        <th><?php echo esc_html__('District', 'bes-textdomain'); ?></th>
+                        <th><?php echo esc_html__('Upazilla', 'bes-textdomain'); ?></th>
+                        <th><?php echo esc_html__('Thana', 'bes-textdomain'); ?></th>
+                        <th><?php echo esc_html__('Postcode', 'bes-textdomain'); ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -67,22 +65,22 @@ function bes_district_tab() {
                 ?>
                     <tr>
                         <?php if($u_index==0 && $t_index==0): ?>
-                            <td rowspan="<?php echo count($d_row['upazillas']) * max(1,count($upazilla['thanas'])); ?>">
-                                <input type="text" name="districts[<?php echo $d_index; ?>][district]" value="<?php echo esc_attr($d_row['district']); ?>" style="width:100%;">
+                            <td rowspan="<?php echo esc_attr(count($d_row['upazillas']) * max(1,count($upazilla['thanas']))); ?>">
+                                <input type="text" name="districts[<?php echo esc_attr($d_index); ?>][district]" value="<?php echo esc_attr($d_row['district']); ?>" style="width:100%;">
                             </td>
                         <?php endif; ?>
 
                         <td>
-                            <input type="text" name="districts[<?php echo $d_index; ?>][upazillas][<?php echo $u_index; ?>][name]" value="<?php echo esc_attr($upazilla['name']); ?>" style="width:100%;">
+                            <input type="text" name="districts[<?php echo esc_attr($d_index); ?>][upazillas][<?php echo esc_attr($u_index); ?>][name]" value="<?php echo esc_attr($upazilla['name']); ?>" style="width:100%;">
                         </td>
 
                         <td>
-                            <input type="text" name="districts[<?php echo $d_index; ?>][upazillas][<?php echo $u_index; ?>][thanas][]" value="<?php echo esc_attr($thana); ?>" style="width:100%;">
+                            <input type="text" name="districts[<?php echo esc_attr($d_index); ?>][upazillas][<?php echo esc_attr($u_index); ?>][thanas][]" value="<?php echo esc_attr($thana); ?>" style="width:100%;">
                         </td>
 
                         <?php if($u_index==0 && $t_index==0): ?>
-                            <td rowspan="<?php echo count($d_row['upazillas']) * max(1,count($upazilla['thanas'])); ?>">
-                                <input type="text" name="districts[<?php echo $d_index; ?>][postcode]" value="<?php echo esc_attr($d_row['postcode']); ?>" style="width:100%;">
+                            <td rowspan="<?php echo esc_attr(count($d_row['upazillas']) * max(1,count($upazilla['thanas']))); ?>">
+                                <input type="text" name="districts[<?php echo esc_attr($d_index); ?>][postcode]" value="<?php echo esc_attr($d_row['postcode']); ?>" style="width:100%;">
                             </td>
                         <?php endif; ?>
                     </tr>
@@ -95,7 +93,7 @@ function bes_district_tab() {
             </table>
 
             <br>
-            <input type="submit" name="bes_save_districts" value="Save Settings" class="button button-primary">
+            <input type="submit" name="bes_save_districts" value="<?php echo esc_attr__('Save Settings', 'bes-textdomain'); ?>" class="button button-primary">
         </form>
     </div>
     <?php
@@ -141,48 +139,48 @@ add_action('admin_init', function(){
  */
 add_filter('woocommerce_checkout_fields', function($fields){
     $saved = get_option('bes_district_settings', ['enabled'=>0,'json'=>'']);
-    $enabled = $saved['enabled'] ?? 0;
+    $enabled = isset($saved['enabled']) ? (int)$saved['enabled'] : 0;
     if(!$enabled) return $fields;
 
     $districts = json_decode($saved['json'], true);
-    $district_options = [''=>'Select District'];
+    $district_options = [''=>esc_html__('Select District','bes-textdomain')];
     $DIST = [];
 
     if($districts){
         foreach($districts as $d){
-            $district_options[$d['district']] = $d['district'];
+            $district_options[esc_attr($d['district'])] = esc_html($d['district']);
             $DIST[$d['district']] = [
-                'upazillas'=>array_column($d['upazillas'],'name'),
-                'thanas'=>array_column($d['upazillas'],'thanas'),
-                'postcode'=>$d['postcode']
+                'upazillas'=>array_map('esc_html', array_column($d['upazillas'],'name')),
+                'thanas'=>array_map(function($t){ return array_map('esc_html',$t); }, array_column($d['upazillas'],'thanas')),
+                'postcode'=>esc_attr($d['postcode'])
             ];
         }
     }
 
     $fields['billing']['billing_district'] = [
         'type'=>'select',
-        'label'=>'District',
+        'label'=>esc_html__('District','bes-textdomain'),
         'required'=>true,
         'class'=>['form-row-first'],
         'options'=>$district_options
     ];
     $fields['billing']['billing_upazilla'] = [
         'type'=>'select',
-        'label'=>'Upazilla',
+        'label'=>esc_html__('Upazilla','bes-textdomain'),
         'required'=>true,
         'class'=>['form-row-last'],
-        'options'=>[''=>'Select Upazilla']
+        'options'=>[''=>esc_html__('Select Upazilla','bes-textdomain')]
     ];
     $fields['billing']['billing_thana'] = [
         'type'=>'select',
-        'label'=>'Thana',
+        'label'=>esc_html__('Thana','bes-textdomain'),
         'required'=>true,
         'class'=>['form-row-wide'],
-        'options'=>[''=>'Select Thana']
+        'options'=>[''=>esc_html__('Select Thana','bes-textdomain')]
     ];
     $fields['billing']['billing_postcode'] = [
         'type'=>'text',
-        'label'=>'Postcode',
+        'label'=>esc_html__('Postcode','bes-textdomain'),
         'required'=>true,
         'class'=>['form-row-wide']
     ];
@@ -197,7 +195,7 @@ add_filter('woocommerce_checkout_fields', function($fields){
  */
 add_action('wp_footer', function(){
     $saved = get_option('bes_district_settings', ['enabled'=>0,'json'=>'']);
-    $enabled = $saved['enabled'] ?? 0;
+    $enabled = isset($saved['enabled']) ? (int)$saved['enabled'] : 0;
     if(!$enabled) return;
 
     $districts = json_decode($saved['json'], true);
@@ -205,25 +203,20 @@ add_action('wp_footer', function(){
 
     $DIST = [];
     foreach($districts as $d){
-        $DIST[$d['district']] = [
-            'upazillas'=>array_column($d['upazillas'],'name'),
-            'thanas'=>array_column($d['upazillas'],'thanas'),
-            'postcode'=>$d['postcode']
+        $DIST[esc_js($d['district'])] = [
+            'upazillas'=>array_map('esc_js', array_column($d['upazillas'],'name')),
+            'thanas'=>array_map(function($t){ return array_map('esc_js',$t); }, array_column($d['upazillas'],'thanas')),
+            'postcode'=>esc_js($d['postcode'])
         ];
     }
     ?>
     <script>
     jQuery(document).ready(function($){
-        const DISTRICTS = <?php echo wp_json_encode($DIST); ?>;
+        const DISTRICTS = <?php echo wp_json_encode($DIST, JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT); ?>;
 
         function populateUpazilla(district){
-            const $up = $('#billing_upazilla');
-            $up.empty();
-            $up.append('<option value="">Select Upazilla</option>');
-
-            const $th = $('#billing_thana');
-            $th.empty();
-            $th.append('<option value="">Select Thana</option>');
+            const $up = $('#billing_upazilla').empty().append('<option value=""><?php echo esc_js('Select Upazilla'); ?></option>');
+            const $th = $('#billing_thana').empty().append('<option value=""><?php echo esc_js('Select Thana'); ?></option>');
 
             if(DISTRICTS[district]){
                 DISTRICTS[district].upazillas.forEach((u,i)=>{
@@ -237,10 +230,7 @@ add_action('wp_footer', function(){
 
         function populateThana(upazilla){
             const district = $('#billing_district').val();
-            const $th = $('#billing_thana');
-            $th.empty();
-            $th.append('<option value="">Select Thana</option>');
-
+            const $th = $('#billing_thana').empty().append('<option value=""><?php echo esc_js('Select Thana'); ?></option>');
             if(DISTRICTS[district]){
                 const idx = DISTRICTS[district].upazillas.indexOf(upazilla);
                 if(idx >= 0){
@@ -254,14 +244,8 @@ add_action('wp_footer', function(){
         populateUpazilla($('#billing_district').val());
         populateThana($('#billing_upazilla').val());
 
-        $(document).on('change','#billing_district',function(){
-            populateUpazilla($(this).val());
-        });
-
-        $(document).on('change','#billing_upazilla',function(){
-            populateThana($(this).val());
-        });
-
+        $(document).on('change','#billing_district',function(){ populateUpazilla($(this).val()); });
+        $(document).on('change','#billing_upazilla',function(){ populateThana($(this).val()); });
         $('body').on('updated_checkout',function(){
             populateUpazilla($('#billing_district').val());
             populateThana($('#billing_upazilla').val());

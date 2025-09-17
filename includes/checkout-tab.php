@@ -26,15 +26,15 @@ function bcaw_checkout_tab() {
     do_settings_sections('bcaw_checkout_group');
     ?>
 
-    <h2><?php _e('Checkout Fields & Titles', 'banglacommerce-all-in-one-woocommerce'); ?></h2>
-    <p><?php _e('Manage fields, titles, order, and additional checkout settings.', 'banglacommerce-all-in-one-woocommerce'); ?></p>
+    <h2><?php echo esc_html__('Checkout Fields & Titles', 'banglacommerce-all-in-one-woocommerce'); ?></h2>
+    <p><?php echo esc_html__('Manage fields, titles, order, and additional checkout settings.', 'banglacommerce-all-in-one-woocommerce'); ?></p>
 
     <div class="bcaw-checkout-wrapper">
 
         <!-- Fields Section -->
         <div class="bcaw-section">
-            <h3><?php _e('Fields Settings', 'banglacommerce-all-in-one-woocommerce'); ?></h3>
-            <p><?php _e('Click a card to expand. Drag to reorder fields. You can disable or rename them.', 'banglacommerce-all-in-one-woocommerce'); ?></p>
+            <h3><?php echo esc_html__('Fields Settings', 'banglacommerce-all-in-one-woocommerce'); ?></h3>
+            <p><?php echo esc_html__('Click a card to expand. Drag to reorder fields. You can disable or rename them.', 'banglacommerce-all-in-one-woocommerce'); ?></p>
 
             <div id="bcaw-checkout-fields">
                 <?php foreach ($checkout as $group_name => $group_fields) : 
@@ -56,12 +56,12 @@ function bcaw_checkout_tab() {
                                             <input type="checkbox" name="bcaw_checkout_fields[<?php echo esc_attr($group_name); ?>][<?php echo esc_attr($key); ?>][enabled]" <?php checked($enabled,true); ?>>
                                             <span class="bcaw-slider round"></span>
                                         </label>
-                                        <input type="text" name="bcaw_checkout_fields[<?php echo esc_attr($group_name); ?>][<?php echo esc_attr($key); ?>][label]" value="<?php echo esc_attr($label); ?>" placeholder="<?php _e('Label', 'banglacommerce-all-in-one-woocommerce'); ?>" style="flex:1; margin-right:5px;">
+                                        <input type="text" name="bcaw_checkout_fields[<?php echo esc_attr($group_name); ?>][<?php echo esc_attr($key); ?>][label]" value="<?php echo esc_attr($label); ?>" placeholder="<?php echo esc_attr__('Label', 'banglacommerce-all-in-one-woocommerce'); ?>" style="flex:1; margin-right:5px;">
                                         <label>
-                                            <input type="checkbox" name="bcaw_checkout_fields[<?php echo esc_attr($group_name); ?>][<?php echo esc_attr($key); ?>][required]" <?php checked($required,true); ?>> <?php _e('Required', 'banglacommerce-all-in-one-woocommerce'); ?>
+                                            <input type="checkbox" name="bcaw_checkout_fields[<?php echo esc_attr($group_name); ?>][<?php echo esc_attr($key); ?>][required]" <?php checked($required,true); ?>> <?php echo esc_html__('Required', 'banglacommerce-all-in-one-woocommerce'); ?>
                                         </label>
-                                        <input type="text" name="bcaw_checkout_fields[<?php echo esc_attr($group_name); ?>][<?php echo esc_attr($key); ?>][placeholder]" value="<?php echo esc_attr($placeholder); ?>" placeholder="<?php _e('Placeholder', 'banglacommerce-all-in-one-woocommerce'); ?>">
-                                        <input type="text" name="bcaw_checkout_fields[<?php echo esc_attr($group_name); ?>][<?php echo esc_attr($key); ?>][description]" value="<?php echo esc_attr($description); ?>" placeholder="<?php _e('Description', 'banglacommerce-all-in-one-woocommerce'); ?>">
+                                        <input type="text" name="bcaw_checkout_fields[<?php echo esc_attr($group_name); ?>][<?php echo esc_attr($key); ?>][placeholder]" value="<?php echo esc_attr($placeholder); ?>" placeholder="<?php echo esc_attr__('Placeholder', 'banglacommerce-all-in-one-woocommerce'); ?>">
+                                        <input type="text" name="bcaw_checkout_fields[<?php echo esc_attr($group_name); ?>][<?php echo esc_attr($key); ?>][description]" value="<?php echo esc_attr($description); ?>" placeholder="<?php echo esc_attr__('Description', 'banglacommerce-all-in-one-woocommerce'); ?>">
                                         <span class="dashicons dashicons-move"></span>
                                     </li>
                                 <?php endforeach; ?>
@@ -74,7 +74,7 @@ function bcaw_checkout_tab() {
 
         <!-- Titles Section -->
         <div class="bcaw-section">
-            <h3><?php _e('Checkout Page Titles', 'banglacommerce-all-in-one-woocommerce'); ?></h3>
+            <h3><?php echo esc_html__('Checkout Page Titles', 'banglacommerce-all-in-one-woocommerce'); ?></h3>
             <div class="bcaw-title-field">
                 <?php foreach ($titles as $key => $value) :
                     $label = ucwords(str_replace('_',' ',$key));
@@ -85,7 +85,7 @@ function bcaw_checkout_tab() {
                 <?php endforeach; ?>
 
                 <div class="bcaw-preview">
-                    <p><strong><?php _e('Live Preview:', 'banglacommerce-all-in-one-woocommerce'); ?></strong></p>
+                    <p><strong><?php echo esc_html__('Live Preview:', 'banglacommerce-all-in-one-woocommerce'); ?></strong></p>
                     <h2 id="bcaw-preview_page_title"><?php echo esc_html($titles['page_title']); ?></h2>
                     <h3 id="bcaw-preview_billing_title"><?php echo esc_html($titles['billing_title']); ?></h3>
                     <h3 id="bcaw-preview_shipping_title"><?php echo esc_html($titles['shipping_title']); ?></h3>
@@ -97,23 +97,23 @@ function bcaw_checkout_tab() {
 
         <!-- Additional Settings Section -->
         <div class="bcaw-section">
-            <h3><?php _e('Additional Settings', 'banglacommerce-all-in-one-woocommerce'); ?></h3>
+            <h3><?php echo esc_html__('Additional Settings', 'banglacommerce-all-in-one-woocommerce'); ?></h3>
             <label class="bcaw-switch">
                 <input type="checkbox" name="bcaw_checkout_additional[show_terms]" <?php checked($additional['show_terms'],true); ?>>
-                <span class="bcaw-slider round"></span> <?php _e('Show Terms & Conditions', 'banglacommerce-all-in-one-woocommerce'); ?>
+                <span class="bcaw-slider round"></span> <?php echo esc_html__('Show Terms & Conditions', 'banglacommerce-all-in-one-woocommerce'); ?>
             </label><br>
-            <textarea name="bcaw_checkout_additional[terms_text]" placeholder="<?php _e('Terms & Conditions text', 'banglacommerce-all-in-one-woocommerce'); ?>" style="width:100%;height:60px;"><?php echo esc_textarea($additional['terms_text']); ?></textarea><br>
+            <textarea name="bcaw_checkout_additional[terms_text]" placeholder="<?php echo esc_attr__('Terms & Conditions text', 'banglacommerce-all-in-one-woocommerce'); ?>" style="width:100%;height:60px;"><?php echo esc_textarea($additional['terms_text']); ?></textarea><br>
 
             <label class="bcaw-switch">
                 <input type="checkbox" name="bcaw_checkout_additional[show_login_reminder]" <?php checked($additional['show_login_reminder'],true); ?>>
-                <span class="bcaw-slider round"></span> <?php _e('Show Login Reminder', 'banglacommerce-all-in-one-woocommerce'); ?>
+                <span class="bcaw-slider round"></span> <?php echo esc_html__('Show Login Reminder', 'banglacommerce-all-in-one-woocommerce'); ?>
             </label><br>
 
-            <label><?php _e('Custom CSS (Optional):', 'banglacommerce-all-in-one-woocommerce'); ?></label><br>
-            <textarea name="bcaw_checkout_additional[custom_css]" placeholder="<?php _e('Custom CSS', 'banglacommerce-all-in-one-woocommerce'); ?>" style="width:100%;height:80px;"><?php echo esc_textarea($additional['custom_css']); ?></textarea>
+            <label><?php echo esc_html__('Custom CSS (Optional):', 'banglacommerce-all-in-one-woocommerce'); ?></label><br>
+            <textarea name="bcaw_checkout_additional[custom_css]" placeholder="<?php echo esc_attr__('Custom CSS', 'banglacommerce-all-in-one-woocommerce'); ?>" style="width:100%;height:80px;"><?php echo esc_textarea($additional['custom_css']); ?></textarea>
         </div>
 
-        <?php submit_button(__('Save Checkout Settings', 'banglacommerce-all-in-one-woocommerce')); ?>
+        <?php submit_button(esc_html__('Save Checkout Settings', 'banglacommerce-all-in-one-woocommerce')); ?>
 
     </div>
 

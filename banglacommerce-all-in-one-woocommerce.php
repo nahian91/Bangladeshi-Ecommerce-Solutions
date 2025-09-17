@@ -71,12 +71,19 @@ add_action('admin_enqueue_scripts', function($hook){
     $active_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'general';
 
     // Enqueue global assets
+    wp_enqueue_style('bcaw-datatable-css', BCAW_PLUGIN_URL.'assets/css/dataTables.min.css', [], filemtime(BCAW_PLUGIN_DIR.'assets/css/dataTables.min.css'));
     wp_enqueue_style('bcaw-admin-css', BCAW_PLUGIN_URL.'assets/css/bcaw-admin.css', [], filemtime(BCAW_PLUGIN_DIR.'assets/css/bcaw-admin.css'));
+    wp_enqueue_script('bcaw-datatable-js', BCAW_PLUGIN_URL.'assets/js/dataTables.min.js', ['jquery'], filemtime(BCAW_PLUGIN_DIR.'assets/js/dataTables.min.js'), true);
     wp_enqueue_script('bcaw-admin-js', BCAW_PLUGIN_URL.'assets/js/bcaw-admin.js', ['jquery'], filemtime(BCAW_PLUGIN_DIR.'assets/js/bcaw-admin.js'), true);
 
     wp_localize_script('bcaw-admin-js', 'bcawSettings', [
-        'activeTab' => $active_tab
-    ]);
+    'activeTab' => $active_tab,
+    'ajax_url'  => admin_url('admin-ajax.php'),
+    'nonce'     => wp_create_nonce('bcaw_media_nonce'),
+    'success'   => __('Media updated successfully!', 'banglacommerce-all-in-one-woocommerce'),
+    'error'     => __('Failed to update media.', 'banglacommerce-all-in-one-woocommerce')
+]);
+
 
     // Tab-specific assets
     $css_file_path = BCAW_PLUGIN_DIR."assets/css/bcaw-{$active_tab}.css";

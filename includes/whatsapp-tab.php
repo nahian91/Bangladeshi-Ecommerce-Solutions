@@ -1,142 +1,140 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (!defined('ABSPATH')) exit;
 
-/**
- * ===============================
- * Admin Settings Tab – WhatsApp
- * ===============================
- */
-function bes_whatsapp_tab() {
-
-    // Defaults (enabled = 0 by default)
+function bcaw_whatsapp_tab() {
     $defaults = [
         'enabled'      => 0,
         'number'       => '',
         'button_text'  => 'Order via WhatsApp',
-        'message'      => 'Hello, I would like to order this product: {product}',
+        'message'      => "Hello! I would like to order the following product:\n\nProduct: {product}\nQuantity: [Please specify]\n\nPlease confirm price and delivery.",
         'show_single'  => 1,
         'show_archive' => 1,
         'color'        => '#25D366',
     ];
 
-    $saved    = get_option( 'bes_whatsapp_settings', [] );
-    $settings = wp_parse_args( $saved, $defaults );
+    $settings = wp_parse_args(get_option('bes_whatsapp_settings', []), $defaults);
 
-    echo '<h2>BES WhatsApp Order Settings</h2>';
-    echo '<p>Enable WhatsApp order button and customize its behavior and appearance.</p>';
+    // Pass settings to JS
+    wp_localize_script('bcaw-whatsapp-js', 'bcawSettings', $settings);
+    wp_enqueue_style('wp-color-picker');
+    wp_enqueue_script('wp-color-picker');
+    ?>
 
-    echo '<form method="post">';
-    wp_nonce_field( 'bes_whatsapp_save', 'bes_whatsapp_nonce' );
+    <h2><?php esc_html_e('WhatsApp Order Settings', 'banglacommerce-all-in-one-woocommerce'); ?></h2>
+    <form method="post">
+        <?php wp_nonce_field('bes_whatsapp_save', 'bes_whatsapp_nonce'); ?>
 
-    // ---- simple CSS for the toggle switch ----
-    echo '<style>
-        .bes-switch { position: relative; display:inline-block; width:50px; height:24px; }
-        .bes-switch input { opacity:0; width:0; height:0; }
-        .bes-slider { position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0;
-                      background:#ccc; transition:.4s; border-radius:24px; }
-        .bes-slider:before { position:absolute; content:""; height:18px; width:18px; left:3px; bottom:3px;
-                             background:white; transition:.4s; border-radius:50%; }
-        .bes-switch input:checked + .bes-slider { background:#25D366; }
-        .bes-switch input:checked + .bes-slider:before { transform: translateX(26px); }
-    </style>';
+        <div class="bcaw-card">
 
-    echo '<div style="background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.05); max-width:600px;">';
+            <div class="bcaw-field">
+                <label><?php esc_html_e('Enable WhatsApp Button', 'banglacommerce-all-in-one-woocommerce'); ?></label>
+                <label class="bcaw-switch">
+                    <input type="checkbox" name="bes_whatsapp_settings[enabled]" value="1" <?php checked($settings['enabled'], 1); ?>>
+                    <span class="bcaw-slider"></span>
+                </label>
+            </div>
 
-    // Enable Switch
-    echo '<p><label>Enable WhatsApp Button: 
-            <label class="bes-switch">
-                <input type="checkbox" name="bes_whatsapp_settings[enabled]" value="1" '.checked( $settings['enabled'], 1, false ).'>
-                <span class="bes-slider"></span>
-            </label>
-          </label></p>';
+            <div class="bcaw-field">
+                <label><?php esc_html_e('Phone Number', 'banglacommerce-all-in-one-woocommerce'); ?></label>
+                <input type="text" name="bes_whatsapp_settings[number]" value="<?php echo esc_attr($settings['number']); ?>" class="bcaw-input bcaw-live" data-target="number">
+            </div>
 
-    // Phone Number
-    echo '<p><label>Phone Number:<br>
-        <input type="text" name="bes_whatsapp_settings[number]" value="'.esc_attr( $settings['number'] ).'" placeholder="+8801XXXXXXXXX" style="width:100%; padding:8px; border-radius:4px; border:1px solid #ccc;">
-        </label></p>';
+            <div class="bcaw-field">
+                <label><?php esc_html_e('Button Text', 'banglacommerce-all-in-one-woocommerce'); ?></label>
+                <input type="text" name="bes_whatsapp_settings[button_text]" value="<?php echo esc_attr($settings['button_text']); ?>" class="bcaw-input bcaw-live" data-target="text">
+            </div>
 
-    // Button Text
-    echo '<p><label>Button Text:<br>
-        <input type="text" name="bes_whatsapp_settings[button_text]" value="'.esc_attr( $settings['button_text'] ).'" style="width:100%; padding:8px; border-radius:4px; border:1px solid #ccc;">
-        </label></p>';
+            <div class="bcaw-field">
+                <label><?php esc_html_e('Message Template', 'banglacommerce-all-in-one-woocommerce'); ?></label>
+                <textarea name="bes_whatsapp_settings[message]" rows="6" class="bcaw-textarea bcaw-live" data-target="message"><?php echo esc_textarea($settings['message']); ?></textarea>
+                <small><?php esc_html_e('Use {product} to include the product name.', 'banglacommerce-all-in-one-woocommerce'); ?></small>
+            </div>
 
-    // Message Template
-    echo '<p><label>Message Template:<br>
-        <textarea name="bes_whatsapp_settings[message]" rows="3" style="width:100%; padding:8px; border-radius:4px; border:1px solid #ccc;">'.esc_textarea( $settings['message'] ).'</textarea></label>
-        <br><small>Use <code>{product}</code> to include product name.</small></p>';
+            <div class="bcaw-field">
+                <label><?php esc_html_e('Show on Single Product Page', 'banglacommerce-all-in-one-woocommerce'); ?></label>
+                <label class="bcaw-switch">
+                    <input type="checkbox" name="bes_whatsapp_settings[show_single]" value="1" <?php checked($settings['show_single'], 1); ?>>
+                    <span class="bcaw-slider"></span>
+                </label>
+            </div>
 
-    // Show on Single
-    echo '<p><label>Show on Single Product Page:
-            <label class="bes-switch">
-                <input type="checkbox" name="bes_whatsapp_settings[show_single]" value="1" '.checked( $settings['show_single'], 1, false ).'>
-                <span class="bes-slider"></span>
-            </label>
-          </label></p>';
+            <div class="bcaw-field">
+                <label><?php esc_html_e('Show on Shop / Archive Pages', 'banglacommerce-all-in-one-woocommerce'); ?></label>
+                <label class="bcaw-switch">
+                    <input type="checkbox" name="bes_whatsapp_settings[show_archive]" value="1" <?php checked($settings['show_archive'], 1); ?>>
+                    <span class="bcaw-slider"></span>
+                </label>
+            </div>
 
-    // Show on Archive
-    echo '<p><label>Show on Shop / Archive Pages:
-            <label class="bes-switch">
-                <input type="checkbox" name="bes_whatsapp_settings[show_archive]" value="1" '.checked( $settings['show_archive'], 1, false ).'>
-                <span class="bes-slider"></span>
-            </label>
-          </label></p>';
+            <div class="bcaw-field">
+                <label><?php esc_html_e('Button Color', 'banglacommerce-all-in-one-woocommerce'); ?></label>
+                <input type="text" name="bes_whatsapp_settings[color]" value="<?php echo esc_attr($settings['color']); ?>" class="bcaw-color-picker bcaw-live" data-target="color">
+            </div>
 
-    // Button Color
-    echo '<p><label>Button Color:<br>
-        <input type="color" name="bes_whatsapp_settings[color]" value="'.esc_attr( $settings['color'] ).'" style="width:100px; height:40px; border:none;">
-        </label></p>';
+            <div class="bcaw-field bcaw-preview-wrapper">
+                <label><?php esc_html_e('Live Preview', 'banglacommerce-all-in-one-woocommerce'); ?></label>
+                <div class="bcaw-preview">
+                    <a href="#" class="bes-whatsapp-btn" id="bcaw-live-preview" target="_blank"><?php echo esc_html($settings['button_text']); ?></a>
+                </div>
+                <div class="bcaw-preview-message">
+                    <small><?php esc_html_e('Preview message:', 'banglacommerce-all-in-one-woocommerce'); ?></small>
+                    <div id="bcaw-live-message"><?php echo esc_html(str_replace('{product}', 'Sample Product', $settings['message'])); ?></div>
+                </div>
+                <button type="button" class="button" id="bcaw-copy-link"><?php esc_html_e('Copy WhatsApp Link', 'banglacommerce-all-in-one-woocommerce'); ?></button>
+            </div>
 
-    echo '</div>';
+        </div>
 
-    submit_button( 'Save WhatsApp Settings' );
-    echo '</form>';
+        <?php submit_button(__('Save WhatsApp Settings', 'banglacommerce-all-in-one-woocommerce')); ?>
+    </form>
+
+<?php
 }
 
-/**
- * Save Settings
- */
-add_action( 'admin_init', function () {
-    if ( isset( $_POST['bes_whatsapp_settings'] ) && check_admin_referer( 'bes_whatsapp_save', 'bes_whatsapp_nonce' ) ) {
+// Save Settings
+add_action('admin_init', function() {
+    if (isset($_POST['bes_whatsapp_settings']) && check_admin_referer('bes_whatsapp_save', 'bes_whatsapp_nonce')) {
         $data = $_POST['bes_whatsapp_settings'];
         $settings = [
-            'enabled'      => ! empty( $data['enabled'] ) ? 1 : 0,
-            'number'       => sanitize_text_field( $data['number'] ?? '' ),
-            'button_text'  => sanitize_text_field( $data['button_text'] ?? 'Order via WhatsApp' ),
-            'message'      => sanitize_textarea_field( $data['message'] ?? '' ),
-            'show_single'  => ! empty( $data['show_single'] ) ? 1 : 0,
-            'show_archive' => ! empty( $data['show_archive'] ) ? 1 : 0,
-            'color'        => sanitize_text_field( $data['color'] ?? '#25D366' ),
+            'enabled'      => !empty($data['enabled']) ? 1 : 0,
+            'number'       => sanitize_text_field($data['number'] ?? ''),
+            'button_text'  => sanitize_text_field($data['button_text'] ?? 'Order via WhatsApp'),
+            'message'      => sanitize_textarea_field($data['message'] ?? ''),
+            'show_single'  => !empty($data['show_single']) ? 1 : 0,
+            'show_archive' => !empty($data['show_archive']) ? 1 : 0,
+            'color'        => sanitize_hex_color($data['color'] ?? '#25D366'),
         ];
-        update_option( 'bes_whatsapp_settings', $settings );
+        update_option('bes_whatsapp_settings', $settings);
     }
-} );
+});
 
-/**
- * Frontend WhatsApp Button
- */
+// Frontend WhatsApp Button
 function bes_whatsapp_button_output() {
-    $settings = get_option( 'bes_whatsapp_settings', [] );
-    if ( empty( $settings['enabled'] ) || empty( $settings['number'] ) ) return;
+    $settings = wp_parse_args(get_option('bes_whatsapp_settings', []), [
+        'enabled'=>0,'number'=>'','button_text'=>'','message'=>'','color'=>'#25D366'
+    ]);
+    if (empty($settings['enabled']) || empty($settings['number'])) return;
 
     global $product;
-    if ( ! $product ) return;
+    if (!$product) return;
 
     $product_name = $product->get_name();
-    $message      = rawurlencode( str_replace( '{product}', $product_name, $settings['message'] ) );
-    $phone        = preg_replace( '/\D/', '', $settings['number'] );
-    $color        = esc_attr( $settings['color'] );
-    $text         = esc_html( $settings['button_text'] );
+    $message = rawurlencode(str_replace('{product}', $product_name, $settings['message']));
+    $phone   = preg_replace('/\D/', '', $settings['number']);
+    $color   = esc_attr($settings['color']);
+    $text    = esc_html($settings['button_text']);
 
-    echo '<a href="https://wa.me/'.$phone.'?text='.$message.'" target="_blank" class="bes-whatsapp-btn" style="display:inline-block; padding:10px 20px; background:'.$color.'; color:#fff; border-radius:6px; text-decoration:none; font-weight:bold; margin-top:10px;">'.$text.'</a>';
+    echo '<div class="bes-whatsapp-wrap">
+        <a href="'.esc_url("https://wa.me/$phone?text=$message").'" target="_blank" class="bes-whatsapp-btn" style="background:'.$color.';">'.$text.'</a>
+    </div>';
 }
 
-// Hooks to WooCommerce
-add_action( 'woocommerce_after_add_to_cart_button', function () {
-    $s = get_option( 'bes_whatsapp_settings', [] );
-    if ( ! empty( $s['show_single'] ) ) bes_whatsapp_button_output();
-} );
-
-add_action( 'woocommerce_after_shop_loop_item', function () {
-    $s = get_option( 'bes_whatsapp_settings', [] );
-    if ( ! empty( $s['show_archive'] ) ) bes_whatsapp_button_output();
-} );
+// WooCommerce Hooks
+add_action('woocommerce_after_add_to_cart_button', function () {
+    $s = get_option('bes_whatsapp_settings', []);
+    if (!empty($s['show_single'])) bes_whatsapp_button_output();
+});
+add_action('woocommerce_after_shop_loop_item', function () {
+    $s = get_option('bes_whatsapp_settings', []);
+    if (!empty($s['show_archive'])) bes_whatsapp_button_output();
+});

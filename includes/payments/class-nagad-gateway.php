@@ -8,8 +8,8 @@ class WC_Gateway_nagad extends WC_Payment_Gateway {
         $this->id = 'nagad'; 
         $this->icon = ''; 
         $this->has_fields = true; 
-        $this->method_title = __('Nagad Payment', 'bangladeshi-payments-mobile');
-        $this->method_description = __('Pay via nagad by entering your phone number and transaction ID.', 'bangladeshi-payments-mobile');
+        $this->method_title = __('Nagad Payment', 'banglacommerce-all-in-one-woocommerce');
+        $this->method_description = __('Pay via nagad by entering your phone number and transaction ID.', 'banglacommerce-all-in-one-woocommerce');
         
         // Load the settings
         $this->init_form_fields();
@@ -29,52 +29,52 @@ class WC_Gateway_nagad extends WC_Payment_Gateway {
 public function init_form_fields() {
     $this->form_fields = array(
         'enabled' => array(
-            'title' => __('Enable/Disable', 'bangladeshi-payments-mobile'),
+            'title' => __('Enable/Disable', 'banglacommerce-all-in-one-woocommerce'),
             'type' => 'checkbox',
-            'label' => __('Enable Nagad Payment', 'bangladeshi-payments-mobile'),
+            'label' => __('Enable Nagad Payment', 'banglacommerce-all-in-one-woocommerce'),
             'default' => 'no',
             'desc_tip' => true,
         ),
         'title' => array(
-            'title' => __('Title', 'bangladeshi-payments-mobile'),
+            'title' => __('Title', 'banglacommerce-all-in-one-woocommerce'),
             'type' => 'text',
-            'description' => __('This controls the title the user sees during checkout.', 'bangladeshi-payments-mobile'),
-            'default' => __('Nagad', 'bangladeshi-payments-mobile'),
+            'description' => __('This controls the title the user sees during checkout.', 'banglacommerce-all-in-one-woocommerce'),
+            'default' => __('Nagad', 'banglacommerce-all-in-one-woocommerce'),
             'desc_tip' => true,
         ),
         'description' => array(
-            'title' => __('Description', 'bangladeshi-payments-mobile'),
+            'title' => __('Description', 'banglacommerce-all-in-one-woocommerce'),
             'type' => 'textarea',
-            'description' => __('Payment method description that the customer will see during checkout.', 'bangladeshi-payments-mobile'),
-            'default' => __('Pay with nagad. Enter your nagad phone number and transaction ID.', 'bangladeshi-payments-mobile'),
+            'description' => __('Payment method description that the customer will see during checkout.', 'banglacommerce-all-in-one-woocommerce'),
+            'default' => __('Pay with nagad. Enter your nagad phone number and transaction ID.', 'banglacommerce-all-in-one-woocommerce'),
         ),
         'account_type' => array(
-            'title' => __('Account Type', 'bangladeshi-payments-mobile'),
+            'title' => __('Account Type', 'banglacommerce-all-in-one-woocommerce'),
             'type' => 'select',
             'options' => array(
-                'personal' => __('Personal', 'bangladeshi-payments-mobile'),
-                'agent' => __('Agent', 'bangladeshi-payments-mobile'),
+                'personal' => __('Personal', 'banglacommerce-all-in-one-woocommerce'),
+                'agent' => __('Agent', 'banglacommerce-all-in-one-woocommerce'),
             ),
-            'description' => __('Select the type of account used for nagad transactions.', 'bangladeshi-payments-mobile'),
+            'description' => __('Select the type of account used for nagad transactions.', 'banglacommerce-all-in-one-woocommerce'),
             'default' => 'personal',
         ),
         'account_number' => array(
-            'title' => __('Account Number', 'bangladeshi-payments-mobile'),
+            'title' => __('Account Number', 'banglacommerce-all-in-one-woocommerce'),
             'type' => 'text',
-            'description' => __('Enter the account number for nagad transactions.', 'bangladeshi-payments-mobile'),
+            'description' => __('Enter the account number for nagad transactions.', 'banglacommerce-all-in-one-woocommerce'),
             'default' => '',
             'required' => true,
         ),
         'apply_nagad_charge' => array(
-            'title' => __('Apply Nagad Charge', 'bangladeshi-payments-mobile'),
+            'title' => __('Apply Nagad Charge', 'banglacommerce-all-in-one-woocommerce'),
             'type' => 'checkbox',
-            'label' => __('Apply Nagad charge to total payment?', 'bangladeshi-payments-mobile'),
+            'label' => __('Apply Nagad charge to total payment?', 'banglacommerce-all-in-one-woocommerce'),
             'default' => 'yes',
         ),
         'nagad_charge' => array(
-            'title' => __('Nagad Charge (%)', 'bangladeshi-payments-mobile'),
+            'title' => __('Nagad Charge (%)', 'banglacommerce-all-in-one-woocommerce'),
             'type' => 'number',
-            'description' => __('Enter the nagad charge as a percentage (e.g., 1.4 for 1.4%).', 'bangladeshi-payments-mobile'),
+            'description' => __('Enter the nagad charge as a percentage (e.g., 1.4 for 1.4%).', 'banglacommerce-all-in-one-woocommerce'),
             'default' => '1.4',
             'custom_attributes' => array(
                 'step' => '0.01',
@@ -86,20 +86,20 @@ public function init_form_fields() {
 
 public function payment_fields() {
     // Translators: %1$s is the total payment amount. %2$s is the nagad fees amount.
-    echo '<p>' . sprintf(esc_html__('You need to send us %1$s (Fees %2$s)', 'bangladeshi-payments-mobile'), esc_html($this->calculate_total_payment()), esc_html($this->calculate_nagad_fees())) . '</p>';
+    echo '<p>' . sprintf(esc_html__('You need to send us %1$s (Fees %2$s)', 'banglacommerce-all-in-one-woocommerce'), esc_html($this->calculate_total_payment()), esc_html($this->calculate_nagad_fees())) . '</p>';
     echo '<p>' . esc_html($this->description) . '</p>';
 
     // Show Account Type and Number
-    echo '<p><strong>' . esc_html__('Account Type: ', 'bangladeshi-payments-mobile') . '</strong>' . esc_html(ucfirst($this->account_type)) . '</p>';
-    echo '<p><strong>' . esc_html__('Account Number: ', 'bangladeshi-payments-mobile') . '</strong>' . esc_html($this->account_number) . '</p>';
+    echo '<p><strong>' . esc_html__('Account Type: ', 'banglacommerce-all-in-one-woocommerce') . '</strong>' . esc_html(ucfirst($this->account_type)) . '</p>';
+    echo '<p><strong>' . esc_html__('Account Number: ', 'banglacommerce-all-in-one-woocommerce') . '</strong>' . esc_html($this->account_number) . '</p>';
     
     echo '<div>
-            <label for="nagad_phone">' . esc_html__('Nagad Phone Number', 'bangladeshi-payments-mobile') . ' <span class="required">*</span></label>
-            <input type="text" name="nagad_phone" id="nagad_phone" placeholder="' . esc_attr__('01XXXXXXXXX', 'bangladeshi-payments-mobile') . '" required>
+            <label for="nagad_phone">' . esc_html__('Nagad Phone Number', 'banglacommerce-all-in-one-woocommerce') . ' <span class="required">*</span></label>
+            <input type="text" name="nagad_phone" id="nagad_phone" placeholder="' . esc_attr__('01XXXXXXXXX', 'banglacommerce-all-in-one-woocommerce') . '" required>
           </div>';
     echo '<div>
-            <label for="nagad_transaction_id">' . esc_html__('Nagad Transaction ID', 'bangladeshi-payments-mobile') . ' <span class="required">*</span></label>
-            <input type="text" name="nagad_transaction_id" id="nagad_transaction_id" placeholder="' . esc_attr__('Transaction ID', 'bangladeshi-payments-mobile') . '" required>
+            <label for="nagad_transaction_id">' . esc_html__('Nagad Transaction ID', 'banglacommerce-all-in-one-woocommerce') . ' <span class="required">*</span></label>
+            <input type="text" name="nagad_transaction_id" id="nagad_transaction_id" placeholder="' . esc_attr__('Transaction ID', 'banglacommerce-all-in-one-woocommerce') . '" required>
           </div>';
     echo '<input type="hidden" name="nagad_nonce" value="' . esc_attr(wp_create_nonce('nagad_payment_nonce')) . '">';
 }
@@ -139,11 +139,11 @@ public function validate_fields() {
     if (isset($_POST['nagad_nonce'])) {
         $nonce = sanitize_text_field(wp_unslash($_POST['nagad_nonce']));
         if (!wp_verify_nonce($nonce, 'nagad_payment_nonce')) {
-            wc_add_notice(__('Nonce verification failed.', 'bangladeshi-payments-mobile'), 'error');
+            wc_add_notice(__('Nonce verification failed.', 'banglacommerce-all-in-one-woocommerce'), 'error');
             return false;
         }
     } else {
-        wc_add_notice(__('Nonce is missing.', 'bangladeshi-payments-mobile'), 'error');
+        wc_add_notice(__('Nonce is missing.', 'banglacommerce-all-in-one-woocommerce'), 'error');
         return false;
     }
 
@@ -151,11 +151,11 @@ public function validate_fields() {
     if (isset($_POST['nagad_phone']) && !empty($_POST['nagad_phone'])) {
         $nagad_phone = sanitize_text_field(wp_unslash($_POST['nagad_phone']));
         if (!preg_match('/^01[0-9]{9}$/', $nagad_phone)) {
-            wc_add_notice(__('Please enter a valid nagad phone number.', 'bangladeshi-payments-mobile'), 'error');
+            wc_add_notice(__('Please enter a valid nagad phone number.', 'banglacommerce-all-in-one-woocommerce'), 'error');
             return false;
         }
     } else {
-        wc_add_notice(__('Nagad phone number is required.', 'bangladeshi-payments-mobile'), 'error');
+        wc_add_notice(__('Nagad phone number is required.', 'banglacommerce-all-in-one-woocommerce'), 'error');
         return false;
     }
 
@@ -163,11 +163,11 @@ public function validate_fields() {
     if (isset($_POST['nagad_transaction_id']) && !empty($_POST['nagad_transaction_id'])) {
         $nagad_transaction_id = sanitize_text_field(wp_unslash($_POST['nagad_transaction_id']));
         if (empty($nagad_transaction_id)) {
-            wc_add_notice(__('Please enter your nagad transaction ID.', 'bangladeshi-payments-mobile'), 'error');
+            wc_add_notice(__('Please enter your nagad transaction ID.', 'banglacommerce-all-in-one-woocommerce'), 'error');
             return false;
         }
     } else {
-        wc_add_notice(__('Nagad transaction ID is required.', 'bangladeshi-payments-mobile'), 'error');
+        wc_add_notice(__('Nagad transaction ID is required.', 'banglacommerce-all-in-one-woocommerce'), 'error');
         return false;
     }
 
@@ -177,7 +177,7 @@ public function validate_fields() {
 // Process the payment (checkout)
 public function process_payment($order_id) {
     if (!isset($_POST['nagad_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nagad_nonce'])), 'nagad_payment_nonce')) {
-        wc_add_notice(__('Nonce verification failed.', 'bangladeshi-payments-mobile'), 'error');
+        wc_add_notice(__('Nonce verification failed.', 'banglacommerce-all-in-one-woocommerce'), 'error');
         return false;
     }
 
@@ -185,11 +185,11 @@ public function process_payment($order_id) {
     if (isset($_POST['nagad_phone']) && !empty($_POST['nagad_phone'])) {
         $nagad_phone = sanitize_text_field(wp_unslash($_POST['nagad_phone']));
         if (!preg_match('/^01[0-9]{9}$/', $nagad_phone)) {
-            wc_add_notice(__('Please enter a valid nagad phone number starting with 01 and containing 11 digits.', 'bangladeshi-payments-mobile'), 'error');
+            wc_add_notice(__('Please enter a valid nagad phone number starting with 01 and containing 11 digits.', 'banglacommerce-all-in-one-woocommerce'), 'error');
             return false;
         }
     } else {
-        wc_add_notice(__('nagad phone number is required.', 'bangladeshi-payments-mobile'), 'error');
+        wc_add_notice(__('nagad phone number is required.', 'banglacommerce-all-in-one-woocommerce'), 'error');
         return false;
     }
 
@@ -197,7 +197,7 @@ public function process_payment($order_id) {
     if (isset($_POST['nagad_transaction_id'])) {
         $nagad_transaction_id = sanitize_text_field(wp_unslash($_POST['nagad_transaction_id']));
     } else {
-        wc_add_notice(__('Nagad transaction ID is required.', 'bangladeshi-payments-mobile'), 'error');
+        wc_add_notice(__('Nagad transaction ID is required.', 'banglacommerce-all-in-one-woocommerce'), 'error');
         return false;
     }
 
@@ -206,7 +206,7 @@ public function process_payment($order_id) {
     update_post_meta($order_id, '_nagad_phone', $nagad_phone);
     update_post_meta($order_id, '_nagad_transaction_id', $nagad_transaction_id);
     
-    $order->update_status('on-hold', __('Waiting for nagad payment confirmation.', 'bangladeshi-payments-mobile'));
+    $order->update_status('on-hold', __('Waiting for nagad payment confirmation.', 'banglacommerce-all-in-one-woocommerce'));
 
     wc_reduce_stock_levels($order_id);
     WC()->cart->empty_cart();
@@ -224,9 +224,9 @@ public function process_payment($order_id) {
         $nagad_transaction_id = get_post_meta($order_id, '_nagad_transaction_id', true);
         
         if ($nagad_phone || $nagad_transaction_id) {
-            echo '<h3>' . esc_html('Nagad Payment Information', 'bangladeshi-payments-mobile') . '</h3>';
-            echo '<p><strong>' . esc_html('Phone Number:', 'bangladeshi-payments-mobile') . '</strong> ' . esc_html($nagad_phone) . '</p>';
-            echo '<p><strong>' . esc_html('Transaction ID:', 'bangladeshi-payments-mobile') . '</strong> ' . esc_html($nagad_transaction_id) . '</p>';
+            echo '<h3>' . esc_html('Nagad Payment Information', 'banglacommerce-all-in-one-woocommerce') . '</h3>';
+            echo '<p><strong>' . esc_html('Phone Number:', 'banglacommerce-all-in-one-woocommerce') . '</strong> ' . esc_html($nagad_phone) . '</p>';
+            echo '<p><strong>' . esc_html('Transaction ID:', 'banglacommerce-all-in-one-woocommerce') . '</strong> ' . esc_html($nagad_transaction_id) . '</p>';
         }
     }
 }
@@ -252,16 +252,16 @@ function display_nagad_info_admin_order($order) {
                         <td colspan="2">
                             <div class="payment-order-page-heading">
                                 <div class="nagad-image bpm-bg-image"></div>
-                                <h4><?php echo esc_html('Nagad Payment Information', 'bangladeshi-payments-mobile'); ?></h4>
+                                <h4><?php echo esc_html('Nagad Payment Information', 'banglacommerce-all-in-one-woocommerce'); ?></h4>
                             </div>     
                         </td>
                     </tr>
                     <tr>
-                        <td><?php echo esc_html('Phone Number:', 'bangladeshi-payments-mobile');?></td>
+                        <td><?php echo esc_html('Phone Number:', 'banglacommerce-all-in-one-woocommerce');?></td>
                         <td><?php echo esc_html($nagad_phone);?></td>
                     </tr>
                     <tr>
-                        <td><?php echo esc_html('Transaction ID:', 'bangladeshi-payments-mobile');?></td>
+                        <td><?php echo esc_html('Transaction ID:', 'banglacommerce-all-in-one-woocommerce');?></td>
                         <td><?php echo esc_html($nagad_transaction_id);?></td>
                     </tr>
                 </table>
